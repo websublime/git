@@ -1,0 +1,22 @@
+{
+    "name"        : "websublime/git",
+    "type"        : "package",
+    "description" : "A git component catalogue.",
+    "keywords"    : ["git, component, library"],
+    "homepage"    : "https://github.com/websublime/git",
+    "license"     : "MIT",
+    "authors"     : [
+        {
+            "name"  : "Miguel Ramos",
+            "email" : "miguel.marques.ramos@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.14"
+    },
+    "autoload": {
+        "psr-0": {
+            "Websublime\\Git": "src/"
+        }
+    }
+}
