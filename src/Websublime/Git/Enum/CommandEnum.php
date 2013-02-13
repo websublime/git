@@ -1,7 +1,7 @@
-<?php
+<?php namespace Websublime\Git\Enum;
 /**
  * ------------------------------------------------------------------------------------
- * CommandTest.php
+ * CommandEnum.php
  * ------------------------------------------------------------------------------------
  *
  * @package Websublime
@@ -31,58 +31,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-use Websublime\Git\Command,
-    Websublime\Git\Enum\CommandEnum,
-    Websublime\Config\Config,
-    Websublime\Config\Loader\YamlConfigLoader,
-    Websublime\Git\Exception\GitRuntimeException;
+use Websublime\Enum\Enum;
 
-class CommandTest extends \PHPUnit_Framework_TestCase {
+class CommandEnum extends Enum {
 
-    public function testRunCommand()
-    {
-
-        $path = dirname(__DIR__).'/tests/config';
-
-        $yaml = new YamlConfigLoader($path);
-
-        $config = new Config();
-        $config->setConfigResolver($yaml);
-
-        $config->import('options.yml');
-
-        $command = new Command($config->get('options.settings.dir'), 'ls', true);
-
-        $log = $command->run(false);
-
-        $this->assertInternalType('string', $log);
-
-        print $log;
-    }
-
-    public function testRunCommandFailure()
-    {
-        $cm = CommandEnum::STATUS();
-
-        $path = dirname(__DIR__).'/tests/config';
-
-        $yaml = new YamlConfigLoader($path);
-
-        $config = new Config();
-        $config->setConfigResolver($yaml);
-
-        $config->import('options.yml');
-
-        $command = new Command($config->get('options.settings.dir'), $cm->getValue(), true);
-
-        try {
-            $command->run();
-        } catch (GitRuntimeException $e) {
-            print $e->getMessage();
-            return;
-        }
-
-         $this->fail('An expected exception has not been raised.');
-    }
+    const CD        = 'cd';
+    const STATUS    = 'git status';
 }
-/** @end CommandTest.php **/
+/** @end CommandEnum.php **/

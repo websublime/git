@@ -1,0 +1,3 @@
+settings:
+    dir: '/Users/miguelramos/Labs/tools/tmp'
+    git: '/usr/bin/git'

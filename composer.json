@@ -11,8 +11,22 @@
             "email" : "miguel.marques.ramos@gmail.com"
         }
     ],
+    "repositories": [
+        {
+            "url": "https://github.com/websublime/enum.git",
+            "type": "git",
+            "branch": "master"
+        },
+        {
+            "url": "https://github.com/websublime/config.git",
+            "type": "git",
+            "branch": "master"
+        }
+    ],
     "require": {
-        "php": ">=5.3.14"
+        "php": ">=5.3.14",
+        "websublime/enum": "dev-master",
+        "websublime/config": "dev-master"
     },
     "autoload": {
         "psr-0": {

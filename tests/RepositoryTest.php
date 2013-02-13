@@ -1,7 +1,7 @@
 <?php
 /**
  * ------------------------------------------------------------------------------------
- * CommandTest.php
+ * RepositoryTest.php
  * ------------------------------------------------------------------------------------
  *
  * @package Websublime
@@ -31,17 +31,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-use Websublime\Git\Command,
+use Websublime\Git\Repository,
     Websublime\Git\Enum\CommandEnum,
     Websublime\Config\Config,
     Websublime\Config\Loader\YamlConfigLoader,
     Websublime\Git\Exception\GitRuntimeException;
 
-class CommandTest extends \PHPUnit_Framework_TestCase {
-
-    public function testRunCommand()
+ class RepositoryTest extends \PHPUnit_Framework_TestCase {
+    
+    public function testRepositoryInstance()
     {
-
         $path = dirname(__DIR__).'/tests/config';
 
         $yaml = new YamlConfigLoader($path);
@@ -51,38 +50,10 @@ class CommandTest extends \PHPUnit_Framework_TestCase {
 
         $config->import('options.yml');
 
-        $command = new Command($config->get('options.settings.dir'), 'ls', true);
+        $repo = new Repository($config);
 
-        $log = $command->run(false);
-
-        $this->assertInternalType('string', $log);
-
-        print $log;
+        $this->assertInstanceOf('Websublime\Git\Repository', $repo);
+        print sprintf('Repository is instance: %s.','Websublime\Git\Repository').PHP_EOL;
     }
-
-    public function testRunCommandFailure()
-    {
-        $cm = CommandEnum::STATUS();
-
-        $path = dirname(__DIR__).'/tests/config';
-
-        $yaml = new YamlConfigLoader($path);
-
-        $config = new Config();
-        $config->setConfigResolver($yaml);
-
-        $config->import('options.yml');
-
-        $command = new Command($config->get('options.settings.dir'), $cm->getValue(), true);
-
-        try {
-            $command->run();
-        } catch (GitRuntimeException $e) {
-            print $e->getMessage();
-            return;
-        }
-
-         $this->fail('An expected exception has not been raised.');
-    }
-}
-/** @end CommandTest.php **/
+ }
+/** @end RepositoryTest.php **/

@@ -1,7 +1,7 @@
-<?php
+<?php namespace Websublime\Git;
 /**
  * ------------------------------------------------------------------------------------
- * CommandTest.php
+ * Repository.php
  * ------------------------------------------------------------------------------------
  *
  * @package Websublime
@@ -31,58 +31,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-use Websublime\Git\Command,
-    Websublime\Git\Enum\CommandEnum,
-    Websublime\Config\Config,
-    Websublime\Config\Loader\YamlConfigLoader,
-    Websublime\Git\Exception\GitRuntimeException;
+use Websublime\Config\Config,
+    Websublime\Git\Exception\InvalidGitRepositoryDirectoryException;
 
-class CommandTest extends \PHPUnit_Framework_TestCase {
+class Repository {
 
-    public function testRunCommand()
+    protected $dateFormat = 'iso';
+    protected $logFormat = '"%H|%T|%an|%ae|%ad|%cn|%ce|%cd|%s"';
+
+    protected $catalogue;
+
+    public function __construct(Config $config, $repo='')
     {
+        $this->catalogue = $config;
 
-        $path = dirname(__DIR__).'/tests/config';
+        $repo = empty($repo) ? '.' : $repo.'.';
 
-        $yaml = new YamlConfigLoader($path);
+        $this->catalogue->add($repo,'repo.config.name');
 
-        $config = new Config();
-        $config->setConfigResolver($yaml);
-
-        $config->import('options.yml');
-
-        $command = new Command($config->get('options.settings.dir'), 'ls', true);
-
-        $log = $command->run(false);
-
-        $this->assertInternalType('string', $log);
-
-        print $log;
+        $this->IsValidGitRepo();
     }
 
-    public function testRunCommandFailure()
+    public function IsValidGitRepo($path = null)
     {
-        $cm = CommandEnum::STATUS();
-
-        $path = dirname(__DIR__).'/tests/config';
-
-        $yaml = new YamlConfigLoader($path);
-
-        $config = new Config();
-        $config->setConfigResolver($yaml);
-
-        $config->import('options.yml');
-
-        $command = new Command($config->get('options.settings.dir'), $cm->getValue(), true);
-
-        try {
-            $command->run();
-        } catch (GitRuntimeException $e) {
-            print $e->getMessage();
-            return;
+        if(!is_null($path)){
+            if(!file_exists($this->dir.'/.git/HEAD')) {
+                throw new InvalidGitRepositoryDirectoryException($path.' is not a valid Git repository');
+            }
         }
 
-         $this->fail('An expected exception has not been raised.');
+        $config = $this->catalogue->get('repo.config.name');
+        var_dump($this->catalogue);
+
+        if(!$this->catalogue->exist('options.'.$config.'settings.dir')){
+            throw new \InvalidArgumentException('dir option doesn\'t exist in the catalogue');
+        } else {
+            if(!file_exists($this->catalogue->get('options.settings.dir').'/.git/HEAD')) {
+                throw new InvalidGitRepositoryDirectoryException($this->catalogue->get('options.settings.dir').' is not a valid Git repository');
+            }
+        }
+
+        return true;
     }
 }
-/** @end CommandTest.php **/
+
+/** @end Repository.php **/

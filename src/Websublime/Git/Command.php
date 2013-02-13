@@ -31,7 +31,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-use Websublime\Git\Exception\GitRuntimeException;
+use Websublime\Git\Exception\GitRuntimeException,
+    Websublime\Git\Enum\CommandEnum;
 
 class Command {
 
@@ -66,9 +67,12 @@ class Command {
         $this->debug          = $debug;
     }
 
-    public function run()
+    public function run($git=true)
     {
-        $commandToRun = sprintf('cd %s && %s', escapeshellarg($this->dir), $this->commandString);
+        $cd = CommandEnum::CD();
+        $status = CommandEnum::STATUS();
+
+        $commandToRun = sprintf('%s %s && %s', $cd->getValue(), escapeshellarg($this->dir), $this->commandString);
 
         if($this->debug) {
             print $commandToRun."\n";
@@ -82,21 +86,23 @@ class Command {
             print $output."\n";
         }
 
-        if(0 !== $returnVar) {
-            // Git 1.5.x returns 1 when running "git status"
-            if(1 === $returnVar && 0 === strncmp($this->commandString, 'git status', 10)) {
-                // it's ok
-            }
-            else {
-                throw new GitRuntimeException(sprintf(
-                    'Command %s failed with code %s: %s',
-                    $commandToRun,
-                    $returnVar,
-                    $output
-                ), $returnVar);
+        if($git){
+            if(0 !== $returnVar) {
+                // Git 1.5.x returns 1 when running "git status"
+                if(1 === $returnVar && 0 === strncmp($this->commandString, $status->getValue(), 10)) {
+                    // it's ok
+                }
+                else {
+                    throw new GitRuntimeException(sprintf(
+                        'Command %s failed with code %s: %s',
+                        $commandToRun,
+                        $returnVar,
+                        $output
+                    ), $returnVar);
+                }
             }
         }
-
+        
         return trim($output);
     }
 }
